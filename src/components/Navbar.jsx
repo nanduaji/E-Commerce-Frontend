@@ -71,7 +71,7 @@ const Navbar = () => {
                         <li className="nav-item text-center mx-2">
                             <Link className="nav-link" to="/messages">
                                 <FontAwesomeIcon icon={faShoppingCart} className="mb-1" />
-                                <span className="badge rounded-pill bg-danger">{cartItems?.products?.length}</span>
+                                <span className="badge rounded-pill bg-danger">{cartItems?.products?.length || 0}</span>
                                 <br />
                                 Cart
                             </Link>
