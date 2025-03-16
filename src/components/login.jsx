@@ -1,19 +1,50 @@
-import React from "react";
+import React, { useState } from "react";
+import { userLogin } from "../apiUtils/userApi";
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const navigate = useNavigate();
+    const isValid = () => {
+        if (email && email?.trim().length > 0 && password && password?.trim().length > 0) {
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailPattern.test(email);
+        } else {
+            return false;
+        }
+    }
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        email.trim();
+        password.trim();
+        if (isValid()) {
+            const response = await userLogin({ email: email, password: password });
+            console.log("response from login: ", response);
+            if (response?.success) {
+                localStorage.setItem("@token", JSON.stringify(response?.token));
+                localStorage.setItem("@entri_user", JSON.stringify(response?.data));
+                navigate('/');
+            } else {
+                alert("Email or Password is invalid!");
+            }
+        } else {
+            alert("Please enter a valid email");
+        }
+    }
   return (
     <div className="d-flex justify-content-center align-items-center vh-100">
       <div className="card shadow-lg p-4 rounded-4 text-center" style={{ width: "400px" }}>
         <img 
-          src="https://cdn.pixabay.com/photo/2017/08/22/11/56/user-2664699_1280.png" 
+          src="login.jpg" 
           alt="Login Vector" 
           className="img-fluid mb-3" 
           style={{ maxWidth: "150px", margin: "0 auto" }}
         />
         <h3 className="mb-3">Welcome Back</h3>
-        <input type="email" className="form-control mb-3" placeholder="Email" />
-        <input type="password" className="form-control mb-3" placeholder="Password" />
-        <button className="btn btn-primary w-100">Login</button>
+        <input type="email" className="form-control mb-3" placeholder="Email" onChange={(e)=>setEmail(e.target.value)}/>
+        <input type="password" className="form-control mb-3" placeholder="Password" onChange={(e)=>setPassword(e.target.value)}/>
+        <button className="btn btn-primary w-100" onClick={handleSubmit}>Login</button>
       </div>
     </div>
   );
