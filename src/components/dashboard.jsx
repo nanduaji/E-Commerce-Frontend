@@ -7,13 +7,14 @@ import { addProductsToCart, getProducts } from "../apiUtils/userApi";
 
 const Dashboard = () => {
     const [products, setProducts] = useState([]);
-
+    
     useEffect(() => {
         const fetchProducts = async () => {
             try {
                 const response = await getProducts();
                 if (response?.success) {
                     setProducts(response?.data);
+                    
                 } else {
                     alert("Error fetching products");
                 }
@@ -27,7 +28,7 @@ const Dashboard = () => {
     const addProductToCart = async (product) => {
         try {
             const response = await addProductsToCart(product);
-            
+            localStorage.setItem("cart",products)
             if (response?.success) {
                 alert("Product added to cart successfully!");
             } else {
@@ -49,25 +50,25 @@ const Dashboard = () => {
                             <p className="lead text-muted">
                                 Discover the latest trends in fashion and beauty.
                             </p>
-                            <Link to="/shop" className="btn btn-primary btn-lg mt-3">
+                            <a href="#shop" className="btn btn-primary btn-lg mt-3">
                                 Shop Now
-                            </Link>
+                            </a>
                         </div>
 
                         {/* Right Column - Image */}
                         <div className="col-md-6">
                             <img
-                                src="homepageimage.jpg"
+                                src="fashion.jpg"
                                 alt="Fashion Banner"
-                                className={`img-fluid w-100 rounded ${styles.homepageimage}`}
-                                style={{ maxWidth: "100%", height: "auto" }}
+                                className={`img-fluid w-auto rounded ${styles.homepageimage}`}
+                                style={{ maxWidth: "100%", height: "600px" }}
                             />
                         </div>
                     </div>
                 </div>
             </div>
 
-            <p className="lead ms-3">SHOP BY CATEGORIES</p>
+            <p className="lead ms-3" id="shop">SHOP BY CATEGORIES</p>
             <div className="container">
                 <div className="row g-4">
                     {products.map((product) => (

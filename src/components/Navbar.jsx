@@ -32,7 +32,7 @@ const Navbar = () => {
         localStorage.removeItem("@user");
 
         // Redirect to login page
-        navigate("/login");
+        navigate("/");
     };
 
     return (
@@ -69,7 +69,7 @@ const Navbar = () => {
                         </li>
 
                         <li className="nav-item text-center mx-2">
-                            <Link className="nav-link" to="/messages">
+                            <Link className="nav-link" to="/cart">
                                 <FontAwesomeIcon icon={faShoppingCart} className="mb-1" />
                                 <span className="badge rounded-pill bg-danger">{cartItems?.products?.length || 0}</span>
                                 <br />
