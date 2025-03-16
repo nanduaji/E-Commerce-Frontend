@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { userLogin } from "../apiUtils/userApi";
 import { useNavigate } from 'react-router-dom';
 
@@ -6,6 +6,21 @@ const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
+    useEffect(() => {
+        const token = JSON.parse(localStorage.getItem('@token'));
+        const user = JSON.parse(localStorage.getItem('@user'));
+
+        if (user && token) {
+            navigate('/dashboard');
+            return;
+        } else {
+            localStorage.removeItem('@token');
+            localStorage.removeItem('@entri_user');
+
+            navigate('/login');
+        }
+        // eslint-disable-next-line
+    }, []);
     const isValid = () => {
         if (email && email?.trim().length > 0 && password && password?.trim().length > 0) {
             const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -23,8 +38,8 @@ const Login = () => {
             console.log("response from login: ", response);
             if (response?.success) {
                 localStorage.setItem("@token", JSON.stringify(response?.token));
-                localStorage.setItem("@entri_user", JSON.stringify(response?.data));
-                navigate('/');
+                localStorage.setItem("@user", JSON.stringify(response?.data));
+                navigate('/dashboard');
             } else {
                 alert("Email or Password is invalid!");
             }
