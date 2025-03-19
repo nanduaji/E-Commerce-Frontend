@@ -7,6 +7,7 @@ import { addProductsToCart, getProducts } from "../apiUtils/userApi";
 
 const Dashboard = () => {
     const [products, setProducts] = useState([]);
+    const [isProductAdded,setIsProductAdded] = useState(false);
     
     useEffect(() => {
         const fetchProducts = async () => {
@@ -30,8 +31,10 @@ const Dashboard = () => {
             const response = await addProductsToCart(product);
             localStorage.setItem("cart",products)
             if (response?.success) {
+                setIsProductAdded(true);
                 alert("Product added to cart successfully!");
             } else {
+                setIsProductAdded(false);
                 alert(response?.message || "Error adding products");
             }
         } catch (error) {

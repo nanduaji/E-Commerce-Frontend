@@ -7,37 +7,50 @@ import { getCartItems } from "../apiUtils/userApi";
 
 const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
+  const [cartId,setCardId] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCartItems = async () => {
       try {
         const response = await getCartItems();
+        setCardId(response.cartItems._id);
         if (response?.success) {
           setCartItems(response?.cartItems?.products || []);
         } else {
-          alert("Error fetching products");
+          alert("Error fetching cart items");
         }
       } catch (error) {
-        console.error("Error fetching products: ", error);
+        console.error("Error fetching cart items: ", error);
       }
     };
 
     fetchCartItems();
   }, []);
 
-  const removeItem = async (productId) => {
-    try {
-      await axiosInstance.post("/removeFromCart", { productId });
-      setCartItems(cartItems.filter((item) => item._id !== productId));
-    } catch (error) {
-      console.error("Error removing item:", error);
-    }
-  };
+
 
   // Calculate Total Price
   const totalPrice = cartItems.reduce((sum, item) => sum + Number(item.price), 0);
+  const handleRemove = async (item) => {
 
+    try {
+      // console.log(cartItems)
+      await axiosInstance.post(
+        "/deleteProductsFromCart",
+        { productId: item._id,cartId:cartId },
+        {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(localStorage.getItem("@token").trim())}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setCartItems(cartItems.filter((cartItem) => cartItem._id !== item._id));
+    } catch (error) {
+      console.error("Error removing item: ", error);
+    }
+  }
   return (
     <div className="container mt-4">
       {/* Header */}
@@ -75,7 +88,7 @@ const CartPage = () => {
                   <p className="fw-bold fs-5 text-success">💲{item.price}</p>
                   <button
                     className="btn btn-outline-danger w-100 rounded-3"
-                    onClick={() => removeItem(item._id)}
+                    onClick={() => handleRemove(item)}
                   >
                     <FontAwesomeIcon icon={faTrash} /> Remove
                   </button>

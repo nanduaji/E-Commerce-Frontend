@@ -14,9 +14,8 @@ const Navbar = () => {
                 const response = await getCartItems();
                 if (response?.success) {
                     setCartItems(response?.cartItems);
-                    console.log("Cart Items", response?.cartItems);
                 } else {
-                    alert("Error fetching products");
+                    alert("Error fetching cart items");
                 }
             } catch (error) {
                 console.error("Error fetching products: ", error);

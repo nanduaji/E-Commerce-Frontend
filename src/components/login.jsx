@@ -12,7 +12,6 @@ const Login = () => {
         const token = JSON.parse(localStorage.getItem('@token'));
         const user = JSON.parse(localStorage.getItem('@user'));
         const role = localStorage.getItem("@role");
-        console.log("role", role)
         if (token && user) {
             if (role === "Admin") {
               navigate("/adminDashboard");
@@ -43,12 +42,10 @@ const Login = () => {
         password.trim();
         if (isValid()) {
             const response = await userLogin({ email: selectedRole === "Admin" ? "admin" : email, password: selectedRole === "Admin" ? "admin123" : password });
-            console.log("response from login: ", response);
             if (response?.success) {
                 localStorage.setItem("@token", JSON.stringify(response?.token));
                 localStorage.setItem("@user", JSON.stringify(response?.data));
-                if (response?.data?.role === "Admin") {
-                    console.log("hello")
+                if (response?.data?.role.toLowerCase() === "admin") {
                     navigate('/adminDashboard');
                 }
                 else {
@@ -62,7 +59,6 @@ const Login = () => {
         }
     }
     const handleRoleChange = (event) => {
-        console.log(event.target.value)
         setSelectedRole(event.target.value);
         localStorage.setItem("@role", event.target.value);
     };
