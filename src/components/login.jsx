@@ -12,56 +12,67 @@ const Login = () => {
         const token = JSON.parse(localStorage.getItem('@token'));
         const user = JSON.parse(localStorage.getItem('@user'));
         const role = localStorage.getItem("@role");
+
         if (token && user) {
             if (role === "Admin") {
-              navigate("/adminDashboard");
+                navigate("/adminDashboard");
             } else {
-              navigate("/dashboard");
+                navigate("/dashboard");
             }
-          } else {
+        } else {
             // Clear incorrect session data
             localStorage.removeItem("@token");
             localStorage.removeItem("@user");
             localStorage.removeItem("@role");
-      
             navigate("/");
-          }
+        }
         // eslint-disable-next-line
     }, []);
+
     const isValid = () => {
-        if (email && email?.trim().length > 0 && password && password?.trim().length > 0) {
+        if (email && email.trim().length > 0 && password && password.trim().length > 0) {
             const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             return emailPattern.test(email);
         } else {
             return false;
         }
-    }
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
-        email.trim();
-        password.trim();
-        if (isValid()) {
-            const response = await userLogin({ email: selectedRole === "Admin" ? "admin" : email, password: selectedRole === "Admin" ? "admin123" : password });
-            if (response?.success) {
-                localStorage.setItem("@token", JSON.stringify(response?.token));
-                localStorage.setItem("@user", JSON.stringify(response?.data));
-                if (response?.data?.role.toLowerCase() === "admin") {
-                    navigate('/adminDashboard');
-                }
-                else {
-                    navigate('/dashboard');
-                }
+
+        const credentials = {
+            email: selectedRole === "Admin" ? "admin" : email.trim(),
+            password: selectedRole === "Admin" ? "admin123" : password.trim(),
+        };
+
+        if (selectedRole !== "Admin" && !isValid()) {
+            alert("Please enter a valid email");
+            return;
+        }
+
+        const response = await userLogin(credentials);
+
+        if (response?.success) {
+            localStorage.setItem("@token", JSON.stringify(response?.token));
+            localStorage.setItem("@user", JSON.stringify(response?.data));
+            localStorage.setItem("@role", selectedRole);
+
+            if (response?.data?.role.toLowerCase() === "admin") {
+                navigate('/adminDashboard');
             } else {
-                alert("Email or Password is invalid!");
+                navigate('/dashboard');
             }
         } else {
-            alert("Please enter a valid email");
+            alert("Email or Password is invalid!");
         }
-    }
+    };
+
     const handleRoleChange = (event) => {
         setSelectedRole(event.target.value);
         localStorage.setItem("@role", event.target.value);
     };
+
     return (
         <div className="d-flex justify-content-center align-items-center vh-100">
             <div className="card shadow-lg p-4 rounded-4 text-center" style={{ width: "400px" }}>
@@ -79,13 +90,13 @@ const Login = () => {
                                 <input
                                     className="form-check-input"
                                     type="radio"
-                                    name="flexRadioDefault"
-                                    id="flexRadioDefault1"
+                                    name="roleSelection"
+                                    id="adminRole"
                                     value="Admin"
                                     checked={selectedRole === "Admin"}
                                     onChange={handleRoleChange}
                                 />
-                                <label className="form-check-label" htmlFor="flexRadioDefault1">
+                                <label className="form-check-label" htmlFor="adminRole">
                                     Admin
                                 </label>
                             </div>
@@ -93,13 +104,13 @@ const Login = () => {
                                 <input
                                     className="form-check-input"
                                     type="radio"
-                                    name="flexRadioDefault"
-                                    id="flexRadioDefault2"
+                                    name="roleSelection"
+                                    id="userRole"
                                     value="User"
                                     checked={selectedRole === "User"}
                                     onChange={handleRoleChange}
                                 />
-                                <label className="form-check-label" htmlFor="flexRadioDefault2">
+                                <label className="form-check-label" htmlFor="userRole">
                                     User
                                 </label>
                             </div>
@@ -108,11 +119,30 @@ const Login = () => {
                     <p className="mt-2">Selected Role: <strong>{selectedRole}</strong></p>
                 </div>
 
+                {/* Email Input */}
+                <input
+                    type="email"
+                    className="form-control mb-3"
+                    placeholder="Email"
+                    onChange={(e) => setEmail(e.target.value)}
+                    value={selectedRole === "Admin" ? "admin" : email}
+                    disabled={selectedRole === "Admin"}
+                />
 
-                <input type="email" className="form-control mb-3" placeholder="Email" onChange={(e) => setEmail(e.target.value)} value={selectedRole === "Admin" ? "admin" : email} />
-                <input type="password" className="form-control mb-3" placeholder="Password" onChange={(e) => setPassword(e.target.value)} value={selectedRole === "Admin" ? "admin123" : password} />
-                {/* <a href="/createAdminUser" style={{display:'flex',marginBottom:'10px'}}>create Admin User</a> */}
-                <button className="btn btn-primary w-100" onClick={handleSubmit}>Login</button>
+                {/* Password Input */}
+                <input
+                    type="password"
+                    className="form-control mb-3"
+                    placeholder="Password"
+                    onChange={(e) => setPassword(e.target.value)}
+                    value={selectedRole === "Admin" ? "admin123" : password}
+                    disabled={selectedRole === "Admin"}
+                />
+
+                {/* Login Button */}
+                <button className="btn btn-primary w-100" onClick={handleSubmit}>
+                    Login
+                </button>
             </div>
         </div>
     );
